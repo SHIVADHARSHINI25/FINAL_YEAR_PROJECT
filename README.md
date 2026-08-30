@@ -48,13 +48,27 @@ Ensure you have Python 3.10+ installed.
 pip install -r requirements.txt
 ```
 
-## Running the Demo
+## Running the Dashboard
 
-A full end-to-end demonstration is provided in `demo.py`. This script simulates a scenario where an ML training pipeline crashes due to a **GPU Out-of-Memory (OOM)** error. 
+This project includes a full React frontend and FastAPI backend orchestrator.
 
-The demo runs all 8 agents sequentially, from detection to root-cause diagnosis, strategy selection, simulated recovery verification, and knowledge recording.
+### 1. Start the Backend API
+```bash
+uvicorn api.main:app --reload
+```
+This runs on `http://localhost:8000` and creates `pipeline.db` automatically.
 
-To run the demo:
+### 2. Start the Frontend Dashboard
+Open a new terminal:
+```bash
+cd frontend
+npm run dev
+```
+Navigate to the local URL (usually `http://localhost:5173`). You can upload a CSV, trigger a mock failure, and watch the agents and Decision Engine recover the pipeline live.
+
+## Running the CLI Demo (Legacy)
+
+A text-based end-to-end demonstration is provided in `demo.py`.
 
 ```bash
 python demo.py

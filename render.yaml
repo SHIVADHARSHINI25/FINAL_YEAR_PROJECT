@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: neuroheal-app
+    env: python
+    buildCommand: bash build.sh
+    startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
+    plan: free

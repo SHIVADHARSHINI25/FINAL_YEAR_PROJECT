@@ -15,6 +15,7 @@ Persistence (JSON / SQLite) can be added later without changing the public API.
 from collections import Counter, defaultdict
 from agents.base import BaseAgent
 from agents.schemas import Evidence, KnowledgeEntry
+from api.database import get_connection
 
 
 class KnowledgeRepositoryAgent(BaseAgent):
@@ -23,6 +24,25 @@ class KnowledgeRepositoryAgent(BaseAgent):
     def __init__(self, name: str = "KnowledgeRepositoryAgent"):
         super().__init__(name)
         self._entries: list[KnowledgeEntry] = []
+        self._load_from_db()
+
+    def _load_from_db(self):
+        try:
+            with get_connection() as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT failure_signature, root_cause_type, recovery_strategy_used, outcome, notes, timestamp FROM knowledge_entries")
+                for row in cursor.fetchall():
+                    entry = KnowledgeEntry(
+                        failure_signature=row["failure_signature"],
+                        root_cause_type=row["root_cause_type"],
+                        recovery_strategy_used=row["recovery_strategy_used"],
+                        outcome=row["outcome"],
+                        notes=row["notes"],
+                        timestamp=row["timestamp"]
+                    )
+                    self._entries.append(entry)
+        except Exception as e:
+            print(f"Warning: Could not load knowledge entries from DB: {e}")
 
     # ------------------------------------------------------------------
     # Public API
@@ -31,6 +51,18 @@ class KnowledgeRepositoryAgent(BaseAgent):
     def record(self, entry: KnowledgeEntry) -> Evidence:
         """Store a new KnowledgeEntry and return a confirming Evidence."""
         self._entries.append(entry)
+        
+        try:
+            with get_connection() as conn:
+                cursor = conn.cursor()
+                cursor.execute('''
+                    INSERT INTO knowledge_entries (failure_signature, root_cause_type, recovery_strategy_used, outcome, notes, timestamp)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                ''', (entry.failure_signature, entry.root_cause_type, entry.recovery_strategy_used, entry.outcome, entry.notes, entry.timestamp))
+                conn.commit()
+        except Exception as e:
+            print(f"Warning: Could not save knowledge entry to DB: {e}")
+            
         return Evidence(
             agent_name=self.name,
             finding=f"Recorded knowledge entry: failure='{entry.failure_signature}', strategy='{entry.recovery_strategy_used}', outcome='{entry.outcome}'.",
