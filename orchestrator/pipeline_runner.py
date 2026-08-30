@@ -174,7 +174,16 @@ class PipelineOrchestrator:
             # Generate mock final output
             is_regression = "regression" in config.get("algorithm", "") or "regressor" in config.get("algorithm", "")
             target_col = config.get("target_column", "label")
-            if is_regression:
+            dataset_name = config.get("dataset_name", "")
+            
+            if "iris" in dataset_name.lower():
+                perf_metrics = {"accuracy": 0.96, "f1_score": 0.95, "precision": 0.96, "recall": 0.94}
+                sample_predictions = [
+                    {"input": {"sepal_len": 5.1, "sepal_wid": 3.5, "petal_len": 1.4, "petal_wid": 0.2}, "prediction": 0, "actual": 0},
+                    {"input": {"sepal_len": 6.7, "sepal_wid": 3.0, "petal_len": 5.2, "petal_wid": 2.3}, "prediction": 2, "actual": 2},
+                    {"input": {"sepal_len": 5.9, "sepal_wid": 3.0, "petal_len": 4.2, "petal_wid": 1.5}, "prediction": 1, "actual": 1}
+                ]
+            elif is_regression:
                 perf_metrics = {"mse": 120.5, "rmse": 10.97, "r2_score": 0.89, "mae": 8.4}
                 sample_predictions = [
                     {"input": {"age": 25, "income": 50000.0}, "prediction": 45.2, "actual": 42.0},
@@ -294,7 +303,16 @@ class PipelineOrchestrator:
             self.status = "recovered"
             is_regression = "regression" in config.get("algorithm", "") or "regressor" in config.get("algorithm", "")
             target_col = config.get("target_column", "label")
-            if is_regression:
+            dataset_name = config.get("dataset_name", "")
+            
+            if "iris" in dataset_name.lower():
+                perf_metrics = {"accuracy": 0.94, "f1_score": 0.93, "precision": 0.95, "recall": 0.93}
+                sample_predictions = [
+                    {"input": {"sepal_len": 5.1, "sepal_wid": 3.5, "petal_len": 1.4, "petal_wid": 0.2}, "prediction": 0, "actual": 0},
+                    {"input": {"sepal_len": 6.7, "sepal_wid": 3.0, "petal_len": 5.2, "petal_wid": 2.3}, "prediction": 2, "actual": 2},
+                    {"input": {"sepal_len": 5.9, "sepal_wid": 3.0, "petal_len": 4.2, "petal_wid": 1.5}, "prediction": 1, "actual": 1}
+                ]
+            elif is_regression:
                 perf_metrics = {"mse": 125.0, "rmse": 11.18, "r2_score": 0.88, "mae": 8.7}
                 sample_predictions = [
                     {"input": {"age": 25, "income": 50000.0}, "prediction": 44.5, "actual": 42.0},
