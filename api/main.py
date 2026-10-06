@@ -11,7 +11,7 @@ import os
 import pickle
 from sklearn.ensemble import RandomForestClassifier
 
-from orchestrator.pipeline_runner import PipelineOrchestrator
+from orchestrator.real_pipeline_runner import RealPipelineOrchestrator as PipelineOrchestrator
 from api.database import get_connection
 
 app = FastAPI(title="Self-Healing ML Pipeline API")
